@@ -1,0 +1,28 @@
+{{- if .Values.shared.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "azure-chart.fullname" . }}
+  labels:
+    {{- include "azure-chart.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "azure-chart.fullname" . }}
+  minReplicas: {{ .Values.shared.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.shared.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.shared.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.shared.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.shared.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.shared.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

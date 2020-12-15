@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontEnd.data.name }}
+spec:
+  {{- if not .Values.shared.autoscaling.enabled }}
+  replicas: {{ .Values.shared.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontEnd.data.name }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Values.frontEnd.data.name }}
+    spec:
+      containers:
+        - name: {{ .Values.frontEnd.data.name }}
+          image: {{ .Values.frontEnd.image.name }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.frontEnd.service.port }}
+          env:
+            - name: REDIS
+              value: {{ .Values.redis.data.name }}
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      

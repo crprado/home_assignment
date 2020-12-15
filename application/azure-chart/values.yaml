@@ -1,0 +1,75 @@
+# Default values for azure-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: acrhomeassign.azurecr.io
+  pullPolicy: IfNotPresent
+  tag: ""
+
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+#Settings for front-end application
+frontEnd:
+  data:
+    name: "azure-vote-front"
+  image:
+    name: "acrhomeassignment.azurecr.io/azure-vote-front:v11"
+  service:
+    type: LoadBalancer
+    port: 80
+    ip: "138.91.224.154"
+
+  ingress:
+    enabled: false
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+#Settings for settings for back-end storage
+redis:
+  data:
+    name: "azure-vote-back"
+
+  service:
+    port: 6379
+
+  ingress:
+    enabled: false
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+#Common settings
+#These could be incorporated into the application settings directly to address any kind of SLOs
+shared:
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 80
